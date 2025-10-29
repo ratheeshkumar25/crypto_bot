@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - CryptoHack Bot</title>
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-form-container">
+            <div class="logo">
+                <h1>CryptoHack Bot</h1>
+                <p>Join the future of crypto trading</p>
+            </div>
+
+            <form id="registerFormElement" class="register-form">
+                <h2>Create Your Account</h2>
+
+                <div class="form-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" placeholder="Choose a username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a strong password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+
+                <div class="exchange-integration">
+                    <h3>Exchange Integration (Optional)</h3>
+                    <p>Connect your exchange accounts for automated trading</p>
+
+                    <div class="exchange-option">
+                        <input type="checkbox" id="enableBinance" name="enableBinance">
+                        <label for="enableBinance">Binance</label>
+                        <div class="exchange-keys" id="binanceKeys" style="display: none;">
+                            <input type="text" id="binanceApiKey" placeholder="API Key">
+                            <input type="password" id="binanceSecretKey" placeholder="Secret Key">
+                        </div>
+                    </div>
+
+                    <div class="exchange-option">
+                        <input type="checkbox" id="enableSolana" name="enableSolana">
+                        <label for="enableSolana">Solana</label>
+                        <div class="exchange-keys" id="solanaKeys" style="display: none;">
+                            <input type="password" id="solanaPrivateKey" placeholder="Private Key">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-btn">Create Account</button>
+
+                <div class="login-link">
+                    <p>Already have an account? <a href="/login">Login here</a></p>
+                </div>
+            </form>
+        </div>
+
+        <div class="register-info">
+            <h2>Why Choose CryptoHack Bot?</h2>
+            <ul>
+                <li>🤖 AI-powered trading strategies</li>
+                <li>📊 Real-time market analysis</li>
+                <li>🔒 Secure API key management</li>
+                <li>⚡ Lightning-fast execution</li>
+                <li>📈 Advanced profit predictions</li>
+                <li>🎯 Risk management tools</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/js/register.js"></script>
+</body>
+</html>

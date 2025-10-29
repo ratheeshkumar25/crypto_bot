@@ -1,0 +1,29 @@
+{
+  "name": "crypto-bot-frontend",
+  "version": "1.0.0",
+  "description": "User-friendly frontend for crypto trading bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chart.js": "^4.5.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "crypto",
+    "trading",
+    "bot",
+    "frontend"
+  ],
+  "author": "",
+  "license": "ISC"
+}
