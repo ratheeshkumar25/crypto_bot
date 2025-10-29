@@ -107,6 +107,39 @@ button:hover {
     border: 1px solid #f5c6cb;
 }
 
+.price-split-view {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.price-panel {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 48%;
+}
+
+.price-panel.bid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.price-panel.ask {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.price-panel h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.price-panel .price {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
 /* Strategy Guide Styles */
 .guide-overlay {
     position: fixed;

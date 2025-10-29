@@ -22,6 +22,7 @@ func SetupRoutes(app *fiber.App, handler *Handler, authHandler *AuthHandler, wsH
 	protected.Get("/predict/:strategy", handler.PredictProfit)
 	protected.Get("/auth/profile", authHandler.GetProfile)
 	protected.Put("/auth/exchange-keys", authHandler.UpdateExchangeKeys)
+	protected.Get("/trades", handler.GetUserTrades)
 
 	// Public routes (no auth required)
 	api.Get("/price/:exchange", handler.GetPrice)

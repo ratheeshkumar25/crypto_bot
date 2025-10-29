@@ -1,0 +1,77 @@
+
+CryptoHack Bot System Architecture
+===================================
+
+    ┌─────────────────┐    ┌──
+   User Browser  │    │ Express Proxy   │    │   Go Fiber API  │
+   (Port 8080)   │◄──►│   Server        │◄──►│   Server         │
+                 │    │ (Port 8080)    │    │   (Port 3000)    │
+ - EJS Templates │    │                 │    │                 │
+    │ - API Proxy     │    │ - REST API      │ - Chart.js      
+ - WebSocket     │    │ - Static Files  │    │ - WebSocket     │
+    └─────────────────┘    └────────────
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+    ┌─────────────────┐    ┌─────────────────┐
+  PostgreSQL DB  │    │  Worker Service │    │ Exchange APIs   │
+                 │    │                 │    │                 │
+ - Users         │    │ - Analysis      │    │ - Binance       │
+ - Trades        │    │ - Automation    │    │ - Solana        │
+ - Signals       │    │ - Scheduling    │    │ - Price Data    │
+    └─────────────────┘    └
+
+Component Descriptions:
+=======================
+
+1. User Browser (Port 8080):
+   - Client-side interface with real-time charts
+   - EJS templating for dynamic content
+   - Chart.js for price visualization
+   - WebSocket client for live updates
+
+2. Express Proxy Server (Port 8080):
+   - Serves frontend assets (HTML, CSS, JS)
+   - Proxies all /api/* requests to backend
+   - Handles static file serving
+   - Manages WebSocket proxying
+
+3. Go Fiber API Server (Port 3000):
+   - Core business logic in Go
+   - RESTful API endpoints
+   - JWT authentication middleware
+   - WebSocket server for real-time data
+   - Dependency injection with Uber Fx
+
+4. PostgreSQL Database:
+   - User accounts and authentication
+   - Trade history and positions
+   - Trading signals and strategies
+   - Indexed for performance
+
+5. Worker Service (Background):
+   - Automated market analysis
+   - Trading strategy execution
+   - Scheduled data processing
+   - Signal generation
+
+6. Exchange APIs:
+   - Binance API for spot trading
+   - Solana Web3.js for blockchain data
+   - Real-time price feeds
+   - Order execution
+
+Data Flow:
+==========
+Browser ↔ Express ↔ Fiber API ↔ Database
+    ↓         ↓         ↓         ↓
+WebSocket ↔ Proxy ↔ WebSocket ↔ Worker
+                              ↕
+                           Exchanges
+
+Communication Protocols:
+=======================
+- HTTP/HTTPS for REST API calls
+- WebSocket for real-time price updates
+- Database connections via PostgreSQL driver
+- External API calls to exchanges
