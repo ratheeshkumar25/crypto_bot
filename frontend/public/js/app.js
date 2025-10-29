@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const stopChartBtn = document.getElementById('stopChart');
     const chartSymbolSelect = document.getElementById('chartSymbol');
     const chartStrategySelect = document.getElementById('chartStrategy');
-    const currentPriceDiv = document.getElementById('currentPrice');
+    const currentPriceDiv = document.getElementById('currentPriceSplitView');
     const showGuideBtn = document.getElementById('showGuide');
     const closeGuideBtn = document.getElementById('closeGuide');
     const strategyGuide = document.getElementById('strategyGuide');
@@ -251,10 +251,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 chart.update();
+                const bidPrice = data.price * 0.9995;
+                const askPrice = data.price * 1.0005;
                 currentPriceDiv.innerHTML = `
-                    <div class="result success">
-                        <strong>Current Price for ${symbol}:</strong> $${data.price}<br>
-                        <small>Last updated: ${now} (Real-time)</small>
+                    <div class="price-panel bid">
+                        <h3>Bid Price</h3>
+                        <div class="price">$${bidPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="price-panel ask">
+                        <h3>Ask Price</h3>
+                        <div class="price">$${askPrice.toFixed(2)}</div>
                     </div>
                 `;
             } catch (error) {
@@ -504,6 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (showLoginBtn) showLoginBtn.style.display = 'none';
             if (loginForm) loginForm.style.display = 'none';
             if (registerForm) registerForm.style.display = 'none';
+            addUserTradesToChart();
         } else {
             console.log('Showing login button');
             if (userInfo) userInfo.style.display = 'none';
@@ -530,5 +537,66 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper function to get auth headers
     function getAuthHeaders() {
         return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    // Function to add user trades to the chart
+    async function addUserTradesToChart() {
+        if (!token) return;
+
+        try {
+            const response = await fetch('/api/trades', {
+                headers: getAuthHeaders()
+            });
+            const data = await response.json();
+
+            if (response.ok && data.trades) {
+                data.trades.forEach(trade => {
+                    const isBuy = trade.Side === 'BUY';
+                    const color = isBuy ? 'blue' : 'purple';
+
+                    // Entry price
+                    const entryDataset = {
+                        label: `${trade.Side} @ ${trade.Price.toFixed(2)}`,
+                        data: Array(timeLabels.length).fill(trade.Price),
+                        borderColor: color,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                    };
+                    chart.data.datasets.push(entryDataset);
+
+                    // Take profit
+                    if (trade.TakeProfit > 0) {
+                        const takeProfitDataset = {
+                            label: `TP @ ${trade.TakeProfit.toFixed(2)}`,
+                            data: Array(timeLabels.length).fill(trade.TakeProfit),
+                            borderColor: color,
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false,
+                        };
+                        chart.data.datasets.push(takeProfitDataset);
+                    }
+
+                    // Stop loss
+                    if (trade.StopLoss > 0) {
+                        const stopLossDataset = {
+                            label: `SL @ ${trade.StopLoss.toFixed(2)}`,
+                            data: Array(timeLabels.length).fill(trade.StopLoss),
+                            borderColor: color,
+                            borderDash: [10, 10],
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            fill: false,
+                        };
+                        chart.data.datasets.push(stopLossDataset);
+                    }
+                });
+                chart.update();
+            }
+        } catch (error) {
+            console.error('Error fetching user trades:', error);
+        }
     }
 });

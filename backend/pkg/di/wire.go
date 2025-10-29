@@ -28,8 +28,8 @@ var Module = fx.Options(
 	fx.Provide(NewStrategies),
 	fx.Provide(predictor.NewPredictor),
 	fx.Provide(service.NewPriceStreamer),
-	fx.Provide(func(exchanges map[string]exchange.Exchange, strategies map[string]strategy.Strategy, pred *predictor.Predictor, tradeRepo *repository.TradeRepository) *api.Handler {
-		return api.NewHandler(exchanges, strategies, pred, tradeRepo)
+	fx.Provide(func(exchanges map[string]exchange.Exchange, strategies map[string]strategy.Strategy, pred *predictor.Predictor, tradeRepo *repository.TradeRepository, signalRepo *repository.SignalRepository) *api.Handler {
+		return api.NewHandler(exchanges, strategies, pred, tradeRepo, signalRepo)
 	}),
 	fx.Provide(api.NewAuthHandler),
 	fx.Provide(func(cfg *config.Config) string { return cfg.JWTSecret }),

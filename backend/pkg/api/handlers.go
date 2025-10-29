@@ -1,8 +1,13 @@
 package api
 
 import (
+	"log"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/ratheeshkumar25/forex_bot/backend/pkg/exchange"
+	"github.com/ratheeshkumar25/forex_bot/backend/pkg/model"
 	"github.com/ratheeshkumar25/forex_bot/backend/pkg/predictor"
 	"github.com/ratheeshkumar25/forex_bot/backend/pkg/repository"
 	"github.com/ratheeshkumar25/forex_bot/backend/pkg/strategy"
@@ -10,19 +15,21 @@ import (
 
 // Handler holds dependencies for API handlers
 type Handler struct {
-	Exchanges  map[string]exchange.Exchange
-	Strategies map[string]strategy.Strategy
-	Predictor  *predictor.Predictor
-	TradeRepo  *repository.TradeRepository
+	Exchanges      map[string]exchange.Exchange
+	Strategies     map[string]strategy.Strategy
+	Predictor      *predictor.Predictor
+	TradeRepo      *repository.TradeRepository
+	SignalRepo     *repository.SignalRepository
 }
 
 // NewHandler creates a new handler
-func NewHandler(exchanges map[string]exchange.Exchange, strategies map[string]strategy.Strategy, pred *predictor.Predictor, tradeRepo *repository.TradeRepository) *Handler {
+func NewHandler(exchanges map[string]exchange.Exchange, strategies map[string]strategy.Strategy, pred *predictor.Predictor, tradeRepo *repository.TradeRepository, signalRepo *repository.SignalRepository) *Handler {
 	return &Handler{
-		Exchanges:  exchanges,
-		Strategies: strategies,
-		Predictor:  pred,
-		TradeRepo:  tradeRepo,
+		Exchanges:      exchanges,
+		Strategies:     strategies,
+		Predictor:      pred,
+		TradeRepo:      tradeRepo,
+		SignalRepo:     signalRepo,
 	}
 }
 
@@ -101,9 +108,40 @@ func (h *Handler) GetSignals(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
+	// Save signals to the database
+	for _, s := range signals {
+		dbSignal := &model.Signal{
+			Symbol:     symbol,
+			Strategy:   strategyName,
+			Type:       s.Type,
+			Price:      s.Price,
+			TakeProfit: s.TakeProfit,
+			StopLoss:   s.StopLoss,
+			CreatedAt:  time.Now(),
+		}
+		if err := h.SignalRepo.CreateSignal(dbSignal); err != nil {
+			// Log the error but don't block the response
+			log.Printf("Error saving signal: %v", err)
+		}
+	}
+
 	return c.JSON(fiber.Map{
 		"strategy": strategyName,
 		"symbol":   symbol,
 		"signals":  signals,
 	})
+}
+
+// GetUserTrades handles getting user trades
+func (h *Handler) GetUserTrades(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := int(claims["user_id"].(float64))
+
+	trades, err := h.TradeRepo.GetTradesByUserID(userID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{"trades": trades})
 }
